@@ -15,14 +15,15 @@ contract FaucetTest is DSTest {
     CheatCodes cheats = CheatCodes(HEVM_ADDRESS);
 
     ERC20Mock mockA;
-    ERC20Mock mockB;
+    // TODO: use second mock token for multi token support testing
+    //ERC20Mock mockB;
     MockUser alice;
 
     Faucet faucet;
 
     function setUp() public {
         mockA = new ERC20Mock("MockA", "MA", 18, 0);
-        mockB = new ERC20Mock("MockB", "MB", 18, 0);
+        //mockB = new ERC20Mock("MockB", "MB", 18, 0);
     }
 
     function testCreateFaucet() public {
