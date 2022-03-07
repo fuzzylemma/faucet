@@ -22,7 +22,6 @@ contract Faucet is IFaucet, Ownable, ReentrancyGuard {
     // token => account => last request
     mapping(address => mapping(address => uint256)) public lastSip;
 
-
     constructor() {
         OwnableStorage.layout().setOwner(msg.sender);
     } 
@@ -44,7 +43,6 @@ contract Faucet is IFaucet, Ownable, ReentrancyGuard {
         delete dripSize[token];
         delete dripFrequency[token];
         //delete lastSip[token]; // traverse and delete?
-
     }
 
     function donateToFaucet(address token, uint256 amount) external {
