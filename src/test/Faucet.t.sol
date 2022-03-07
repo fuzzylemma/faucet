@@ -8,22 +8,39 @@ import {MockUser} from "./utils/MockUser.sol";
 
 interface CheatCodes {
     function warp(uint) external;
+    function expectRevert(bytes calldata) external;
 }
 
 contract FaucetTest is DSTest {
 
     CheatCodes cheats = CheatCodes(HEVM_ADDRESS);
 
-    ERC20Mock mockA;
-    // TODO: use second mock token for multi token support testing
-    //ERC20Mock mockB;
-    MockUser alice;
-
     Faucet faucet;
+    MockUser alice;
+    ERC20Mock mockA;
+    ERC20Mock mockB;
 
     function setUp() public {
         mockA = new ERC20Mock("MockA", "MA", 18, 0);
-        //mockB = new ERC20Mock("MockB", "MB", 18, 0);
+        mockB = new ERC20Mock("MockB", "MB", 18, 0);
+    }
+
+    function testOwnerAccess() public {
+        faucet = new Faucet();
+        alice = new MockUser(address(faucet));
+        faucet.createFaucet(address(mockA), 1, 1);
+
+        cheats.expectRevert(bytes("Ownable: sender must be owner"));
+        alice.createFaucet(address(mockB), 1, 1);
+
+        cheats.expectRevert(bytes("Ownable: sender must be owner"));
+        alice.destroyFaucet(address(mockA));
+
+        cheats.expectRevert(bytes("Ownable: sender must be owner"));
+        alice.setDrip(address(mockA), 1);
+
+        cheats.expectRevert(bytes("Ownable: sender must be owner"));
+        alice.setDripFrequency(address(mockA), 1);
     }
 
     function testCreateFaucet() public {
@@ -97,7 +114,7 @@ contract FaucetTest is DSTest {
 
         assertEq(faucet.dripFrequency(address(mockA)), 0);
         assertEq(faucet.dripSize(address(mockA)), 0);
-        //assertEq(faucet.exists(address(mockA)), false);
+        assertTrue(faucet.exists(address(mockA)) == false);
 
         faucet.createFaucet(address(mockA), dripSize, dripFrequency);
         faucet.donateToFaucet(address(mockA), supply);
