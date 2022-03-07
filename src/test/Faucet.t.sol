@@ -23,11 +23,11 @@ contract FaucetTest is DSTest {
     function setUp() public {
         mockA = new ERC20Mock("MockA", "MA", 18, 0);
         mockB = new ERC20Mock("MockB", "MB", 18, 0);
+        faucet = new Faucet();
+        alice = new MockUser(address(faucet));
     }
 
     function testOwnerAccess() public {
-        faucet = new Faucet();
-        alice = new MockUser(address(faucet));
         faucet.createFaucet(address(mockA), 1, 1);
 
         cheats.expectRevert(bytes("Ownable: sender must be owner"));
@@ -44,8 +44,6 @@ contract FaucetTest is DSTest {
     }
 
     function testCreateFaucet() public {
-        faucet = new Faucet();
-
         uint dripSize = 1000 ether;
         uint dripFrequency = 60 * 60 * 24 * 7; 
 
@@ -57,8 +55,6 @@ contract FaucetTest is DSTest {
     }
 
     function testDonateToFaucet() public {
-        faucet = new Faucet();
-
         uint supply = 1000000 ether;
 
         mockA.__mint(address(this), supply);
@@ -74,9 +70,6 @@ contract FaucetTest is DSTest {
     }
 
     function testRequest() public {
-        faucet = new Faucet();
-        alice = new MockUser(address(faucet));
-
         uint supply = 1000000 ether;
         mockA.__mint(address(this), supply);
         mockA.approve(address(faucet), supply);
@@ -92,16 +85,11 @@ contract FaucetTest is DSTest {
     }
 
     function testFailDestroyFaucetNotPlumber() public {
-        faucet = new Faucet();
-        alice = new MockUser(address(faucet));
         faucet.createFaucet(address(mockA), 0, 0);
         alice.destroyFaucet(address(mockA));
     }
 
     function testDestroyFaucet() public {
-        faucet = new Faucet();
-        alice = new MockUser(address(faucet));
-
         uint supply = 1000000 ether;
         mockA.__mint(address(this), supply);
         mockA.approve(address(faucet), supply);
@@ -134,9 +122,6 @@ contract FaucetTest is DSTest {
     }
 
     function testFailClosedFaucet() public {
-        faucet = new Faucet();
-        alice = new MockUser(address(faucet));
-
         uint supply = 1000000 ether;
         mockA.__mint(address(this), supply);
         mockA.approve(address(faucet), supply);
@@ -150,7 +135,6 @@ contract FaucetTest is DSTest {
     }
 
     function testSetDripSize() public {
-        faucet = new Faucet();
         uint dripSize = 1000 ether;
         faucet.createFaucet(address(mockA), dripSize, 0);
         faucet.setDrip(address(mockA), 0);
@@ -158,15 +142,12 @@ contract FaucetTest is DSTest {
     }
 
     function testFailSetDripSizeNotPlumber() public {
-        faucet = new Faucet();
-        alice = new MockUser(address(faucet));
         uint dripSize = 1000 ether;
         faucet.createFaucet(address(mockA), dripSize, 0);
         alice.setDrip(address(mockA), 0);
     }
 
     function testSetDripFrequency() public {
-        faucet = new Faucet();
         uint dripFrequency = 60 * 60 * 24 * 7;
         faucet.createFaucet(address(mockA), 0, dripFrequency);
         faucet.setDripFrequency(address(mockA), 0);
@@ -174,8 +155,6 @@ contract FaucetTest is DSTest {
     }
 
     function testFailSetDripFrequencyNotPlumber() public {
-        faucet = new Faucet();
-        alice = new MockUser(address(faucet));
         uint dripFrequency = 60 * 60 * 24 * 7;
         faucet.createFaucet(address(mockA), 0, dripFrequency);
         alice.setDripFrequency(address(mockA), 0);
