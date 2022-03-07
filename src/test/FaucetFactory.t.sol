@@ -5,6 +5,7 @@ import "ds-test/test.sol";
 import {ERC20Mock} from "solidstate-solidity/token/ERC20/ERC20Mock.sol";
 import {FaucetFactory} from "../FaucetFactory.sol";
 import {IFaucet} from "../interfaces/IFaucet.sol";
+import "../libraries/FaucetFactoryErrors.sol";
 
 interface CheatCodes {
     function expectRevert(bytes calldata) external;
@@ -26,7 +27,7 @@ contract FaucetFactoryTest is DSTest {
 
     function testFactory() public {
         address faucet = faucetFactory.createFaucet();
-        cheats.expectRevert(bytes("account has a faucet"));
+        cheats.expectRevert(bytes(FaucetFactoryErrors.ACCOUNT_HAS_FAUCET));
         faucetFactory.createFaucet();
         faucetFactory.abandonFaucet(faucet);
         faucetFactory.createFaucet();

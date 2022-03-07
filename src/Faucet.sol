@@ -5,6 +5,7 @@ import {IERC20} from "solidstate-solidity/token/ERC20/IERC20.sol";
 import {SafeERC20} from "solidstate-solidity/utils/SafeERC20.sol";
 import {Ownable, OwnableStorage} from "solidstate-solidity/access/Ownable.sol";
 import {IFaucet} from "./interfaces/IFaucet.sol";
+import "./libraries/FaucetErrors.sol";
 import "solidstate-solidity/utils/ReentrancyGuard.sol";
 
 contract Faucet is IFaucet, Ownable, ReentrancyGuard {
@@ -32,7 +33,7 @@ contract Faucet is IFaucet, Ownable, ReentrancyGuard {
     }
 
     function createFaucet(address token, uint256 drip, uint256 frequency) external onlyOwner {
-        require(!exists[token], "faucet exists");
+        require(!exists[token], FaucetErrors.FAUCET_EXISTS);
         exists[token] = true;
         dripSize[token] = drip;
         dripFrequency[token] = frequency;
@@ -64,11 +65,11 @@ contract Faucet is IFaucet, Ownable, ReentrancyGuard {
     }
 
     function request(address token) external nonReentrant {
-        require(dripFrequency[token] > 0, "faucet closed");
+        require(dripFrequency[token] > 0, FaucetErrors.FAUCET_CLOSED);
         if (lastSip[token][msg.sender] != 0) {
-            require(block.timestamp > lastSip[token][msg.sender] + dripFrequency[token], "request too high frequency");
+            require(block.timestamp > lastSip[token][msg.sender] + dripFrequency[token], FaucetErrors.REQUEST_FREQUENCY);
         }
-        require(IERC20(token).balanceOf(address(this)) >= dripSize[token], "faucet dry");
+        require(IERC20(token).balanceOf(address(this)) >= dripSize[token], FaucetErrors.FAUCET_EMPTY);
 
         lastSip[token][msg.sender] = block.timestamp;
         IERC20(token).safeTransfer(msg.sender, dripSize[token]);

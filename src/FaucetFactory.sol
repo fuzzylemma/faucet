@@ -2,6 +2,7 @@
 pragma solidity 0.8.10;
 
 import {Faucet} from "./Faucet.sol";
+import "./libraries/FaucetFactoryErrors.sol";
 
 contract FaucetFactory {
 
@@ -18,7 +19,7 @@ contract FaucetFactory {
     }
 
     function createFaucet() external returns (address){
-        require(ownerToFaucet[msg.sender] == address(0), "account has a faucet");
+        require(ownerToFaucet[msg.sender] == address(0), FaucetFactoryErrors.ACCOUNT_HAS_FAUCET);
         Faucet faucet = new Faucet();
         faucet.transferOwnership(msg.sender);
         faucets.push(address(faucet));
@@ -28,7 +29,7 @@ contract FaucetFactory {
     }
 
     function abandonFaucet(address faucet) external {
-        require(ownerToFaucet[msg.sender] == faucet, "not cached faucet owner");
+        require(ownerToFaucet[msg.sender] == faucet, FaucetFactoryErrors.NOT_FAUCET_OWNER);
         ownerToFaucet[msg.sender] = address(0);
         delete ownerToFaucet[msg.sender];
         emit FaucetAbandoned(faucet, msg.sender);
