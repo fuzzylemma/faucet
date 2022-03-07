@@ -17,17 +17,18 @@ contract FaucetFactory {
         return faucets.length;
     }
 
-    function create_faucet() external {
+    function createFaucet() external returns (address){
         require(ownerToFaucet[msg.sender] == address(0), "account has a faucet");
         Faucet faucet = new Faucet();
         faucet.transferOwnership(msg.sender);
         faucets.push(address(faucet));
         ownerToFaucet[msg.sender] = address(faucet);
         emit FaucetCreated(address(faucet), msg.sender);
+        return address(faucet);
     }
 
-    function abandon_faucet(address faucet) external {
-        require(ownerToFaucet[msg.sender] == faucet, "not faucet owner");
+    function abandonFaucet(address faucet) external {
+        require(ownerToFaucet[msg.sender] == faucet, "not cached faucet owner");
         ownerToFaucet[msg.sender] = address(0);
         delete ownerToFaucet[msg.sender];
         emit FaucetAbandoned(faucet, msg.sender);
