@@ -124,6 +124,13 @@ contract FaucetTest is DSTest {
         faucet.destroyFaucet(address(mockA));
 
         assertEq(mockA.balanceOf(address(this)), supply-(2*dripSize));
+        assertEq(faucet.allTokensLength(), 0);
+
+        faucet.createFaucet(address(mockA), dripSize, dripFrequency);
+        faucet.createFaucet(address(mockB), dripSize, dripFrequency);
+        faucet.destroyFaucet(address(mockA));
+        assertEq(faucet.allTokensLength(), 1);
+        assertEq(faucet.tokens(0), address(mockB));
     }
 
     function testFailClosedFaucet() public {

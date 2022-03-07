@@ -12,6 +12,7 @@ contract Faucet is IFaucet, Ownable, ReentrancyGuard {
     using OwnableStorage for OwnableStorage.Layout;
     using SafeERC20 for IERC20;
 
+    address[] public tokens;
     // token => exists
     mapping(address => bool) public exists;
     // token => drip size 
@@ -26,11 +27,16 @@ contract Faucet is IFaucet, Ownable, ReentrancyGuard {
         OwnableStorage.layout().setOwner(msg.sender);
     } 
 
+    function allTokensLength() external returns (uint) {
+        return tokens.length;
+    }
+
     function createFaucet(address token, uint256 drip, uint256 frequency) external onlyOwner {
         require(!exists[token], "faucet exists");
         exists[token] = true;
         dripSize[token] = drip;
         dripFrequency[token] = frequency;
+        tokens.push(token);
     }
 
     function destroyFaucet(address token) external onlyOwner {
@@ -43,6 +49,14 @@ contract Faucet is IFaucet, Ownable, ReentrancyGuard {
         delete dripSize[token];
         delete dripFrequency[token];
         //delete lastSip[token]; // traverse and delete?
+
+        for (uint i = 0; i < tokens.length; i++) {
+            if (tokens[i] == token) {
+                tokens[i] = tokens[tokens.length-1];
+                tokens.pop();
+                break;
+            }
+        }
     }
 
     function donateToFaucet(address token, uint256 amount) external {
