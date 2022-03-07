@@ -7,7 +7,7 @@ contract FaucetFactory {
 
     Faucet[] faucets;
 
-    event ChildFaucet(address faucetAddress, address owner);
+    event FaucetCreated(address faucetAddress, address owner);
 
     function allFaucetsLength() external view returns (uint) {
         return faucets.length;
@@ -17,6 +17,7 @@ contract FaucetFactory {
         Faucet faucet = new Faucet();
         faucets.push(faucet);
         faucet.transferOwnership(msg.sender);
+        emit FaucetCreated(address(faucet), msg.sender);
     }
 
 }
