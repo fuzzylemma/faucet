@@ -6,6 +6,8 @@ import {Faucet} from "./Faucet.sol";
 contract FaucetFactory {
 
     address[] public faucets;
+
+    // Note: owner stored here may drift from actual faucet owner 
     mapping(address => address) ownerToFaucet;
 
     event FaucetCreated(address faucetAddress, address owner);
