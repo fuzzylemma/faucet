@@ -36,7 +36,7 @@ contract FaucetTest is DSTest {
 
         assertEq(faucet.dripFrequency(address(mockA)), dripFrequency);
         assertEq(faucet.dripSize(address(mockA)), dripSize);
-        assertEq(faucet.plumber(address(mockA)), address(this));
+        assertEq(faucet.owner(), address(this));
     }
 
     function testDonateToFaucet() public {
@@ -97,7 +97,7 @@ contract FaucetTest is DSTest {
 
         assertEq(faucet.dripFrequency(address(mockA)), 0);
         assertEq(faucet.dripSize(address(mockA)), 0);
-        assertEq(faucet.plumber(address(mockA)), address(0));
+        //assertEq(faucet.exists(address(mockA)), false);
 
         faucet.createFaucet(address(mockA), dripSize, dripFrequency);
         faucet.donateToFaucet(address(mockA), supply);
