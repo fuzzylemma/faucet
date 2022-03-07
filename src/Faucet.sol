@@ -3,10 +3,11 @@ pragma solidity 0.8.10;
 
 import {IERC20} from "solidstate-solidity/token/ERC20/IERC20.sol";
 import {SafeERC20} from "solidstate-solidity/utils/SafeERC20.sol";
+import {Ownable} from "solidstate-solidity/access/Ownable.sol";
 import "solidstate-solidity/utils/ReentrancyGuard.sol";
 import {IFaucet} from "./interfaces/IFaucet.sol";
 
-contract Faucet is IFaucet {
+contract Faucet is IFaucet, Ownable {
 
     using SafeERC20 for IERC20;
 
